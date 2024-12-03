@@ -31,7 +31,7 @@ good_food_image = pygame.transform.scale(good_food_image, (50, 50))
 bad_food_image = pygame.transform.scale(bad_food_image, (50, 50))
 
 # Fontes
-font = pygame.font.SysFont("comicsansms", 40)
+font = pygame.font.SysFont("comicsansms", 50)
 
 def draw_text(text, x, y, color=BLACK, shadow=False):
     text_surface = font.render(text, True, color)
@@ -45,9 +45,9 @@ class Player:
     def __init__(self):
         self.x = SCREEN_WIDTH // 2
         self.y = SCREEN_HEIGHT - 70
-        self.speed = 7
+        self.speed = 10
         self.score = 0
-        self.lives = 3
+        self.lives = 5
 
     def move(self, keys):
         if keys[pygame.K_LEFT]:
@@ -89,7 +89,7 @@ class Inimigo:
     def draw(self):
         # Carregar a imagem do inimigo uma única vez
         bad_food_image = pygame.image.load(r"C:\Users\17064192608\joguito\Food Drop\assets\images\bad_food.png")
-        bad_food_image = pygame.transform.scale(bad_food_image, (50, 50))
+        bad_food_image = pygame.transform.scale(bad_food_image, (40, 40))
         screen.blit(bad_food_image, (self.x, self.y))
 
 # Integração com Django
@@ -114,6 +114,7 @@ phase = 1
 phase_speed_increase = 1  # Incremento da velocidade dos inimigos e alimentos
 
 # Função para resetar alimentos e inimigos
+# Função para resetar alimentos e inimigos
 def reset_foods_and_enemies():
     global foods, enemies
     foods.clear()
@@ -123,8 +124,9 @@ def reset_foods_and_enemies():
         y = random.randint(-200, -20)
         good = random.choice([True, False])
         foods.append(Food(x, y, good, speed=5 + phase_speed_increase))  # Aumentar a velocidade com as fases
-    for _ in range(3):  # Número fixo de inimigos (reduzido de acordo com sua solicitação)
+    for _ in range(5):  # Apenas 1 inimigo
         enemies.append(Inimigo(speed=5 + phase_speed_increase))  # Aumentar a velocidade dos inimigos
+
 
 reset_foods_and_enemies()
 
@@ -162,13 +164,14 @@ while game_running:
         # Colisão com o player
         if (enemy.y + 50 > player.y) and (enemy.x < player.x + 100) and (enemy.x + 50 > player.x):
             player.lives -= 1
-            enemies.remove(enemy)  # Remover o inimigo após a colisão
+            # enemies.remove(enemy)  # Remover o inimigo após a colisão
 
     # Atualizar fase
-    if player.score >= phase * 100:
-        phase += 1
-        phase_speed_increase += 1  # Aumentar a dificuldade
-        reset_foods_and_enemies()  # Resetar alimentos e inimigos com nova dificuldade
+        if player.score >= phase * 5:  # Alterado de 100 para 5
+            phase += 1
+            phase_speed_increase += 1  # Aumentar a dificuldade
+            reset_foods_and_enemies()  # Resetar alimentos e inimigos com nova dificuldade
+
 
     # Exibir informações
     draw_text(f"Fase: {phase}", SCREEN_WIDTH // 2 - 50, 10, color=BLUE)
